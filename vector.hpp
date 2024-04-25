@@ -1,20 +1,31 @@
 #include <algorithm>
 #include <iostream>
 #include <string>
-
+// resize, shrink_to_fit, push_back
 // исправить проблему с индексами
 // сделать pop, clear, erase, size, empty, =, iterators
+// подумать стоит ли выбрасывать ошибки при pop, clear если размер вектора = 0
+// использование copy, move, swap
+// оттестить всё
+// переместить функционал в сипипишник
 
 template <typename T> class Vector {
 public:
-  Vector() = default;
-  ~Vector() = default;
+  Vector() {
+    data = new T[1];
+    size_ = 0;
+    capacity_ = 1;
+  }
+
+  ~Vector() {
+    delete[] data;
+    data = nullptr;
+  }
 
   // other - rvalue. lvalue = rvalue
   Vector(const Vector &other) : size_(other.size_), capacity_(other.capacity_) {
     data = new T[capacity_];
-    if (capacity_ > 0)
-      std::copy(other.data, other.data + size_, data);
+    std::copy(other.data, other.data + size_, data);
   }
 
   // other - rvalue. lvalue = rvalue, затем rvalue = nullptr
@@ -28,20 +39,58 @@ public:
   }
 
   void push_back(const T &value) {
-    if (size_ + 1 == capacity_) {
+    if (size_ == capacity_) {
       capacity_ *= 2;
-      T *reserve_data = new T[capacity_];
-      for (size_t i = 0; i < size_; i++)
-        reserve_data[i] = data[i];
-      std::swap(reserve_data, data);
-      delete[] reserve_data;
+      UseReserveStorage(capacity_);
     }
     data[size_] = value;
     size_++;
   }
 
   void pop_back() {
+    if (size_ > 0) {
+      data[size_ - 1] = 0;
+      size_--;
+    }
+  }
 
+  // не удаляет выделенную память, а лишь зануляет всё и сводит размер к 0
+  void clear() {
+    if (size_ > 0) {
+      std::fill(data, data + size_, 0);
+      size_ = 0;
+    }
+  }
+
+  size_t size() { return size_; }
+
+  bool empty() {
+    if (size_)
+      return false;
+    return true;
+  }
+
+  void erase(size_t index) {
+    if (index <= size_) {
+      for (size_t i = index; i < size_ - 1; i++)
+        data[i] = data[i + 1];
+      data[size_] = 0;
+      size_--;
+    }
+  }
+
+  // сводит capacity_ к size_. То есть уменьшает выделенную память под
+  // количество использованных элементов
+  void shrink_to_fit() {
+    UseReserveStorage(size_);
+    capacity_ = size_;
+  }
+
+  void operator=(const Vector &other) {
+    capacity_ = other.capacity_;
+    size_ = other.size_;
+    data = new T[capacity_];
+    std::copy(other.data, other.data + size_, data);
   }
 
   T operator[](size_t index) {
@@ -50,8 +99,28 @@ public:
     return data[index];
   }
 
+  void resize(size_t new_size) {
+    if (new_size <= size_)
+      std::fill(data + new_size, data + size_, 0);
+    else
+      UseReserveStorage(new_size);
+    size_ = new_size;
+    capacity_ = new_size;
+  }
+
+  size_t capacity() { return capacity_; }
+
 private:
-  T *data = nullptr;
-  size_t size_ = 0;
-  size_t capacity_ = 1;
+  T *data;
+  // основные взаимодействия приходится с size_. Очищение, добавление, удаление
+  size_t size_; // размер вектора
+  // capacity_ увеличивается лишь в случае, когда size_ = capacity_
+  size_t capacity_; // выделенная память
+
+  void UseReserveStorage(size_t capacity) {
+    T *reserve_data = new T[capacity_];
+    std::copy(data, data + size_, reserve_data);
+    std::swap(reserve_data, data);
+    delete[] reserve_data;
+  }
 };
