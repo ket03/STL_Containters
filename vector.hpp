@@ -1,13 +1,12 @@
 #include <algorithm>
-#include <iostream>
 #include <string>
 // resize, shrink_to_fit, push_back
 // исправить проблему с индексами
 // сделать pop, clear, erase, size, empty, =, iterators
 // подумать стоит ли выбрасывать ошибки при pop, clear если размер вектора = 0
 // использование copy, move, swap
-// оттестить всё
-// переместить функционал в сипипишник
+// оттестить всё !!!
+// переместить функционал в сипипишник !!!
 
 template <typename T> class Vector {
 public:
@@ -38,7 +37,7 @@ public:
     other.capacity_ = 0;
   }
 
-  void push_back(const T &value) {
+  void push_back(const T value) {
     if (size_ == capacity_) {
       capacity_ *= 2;
       UseReserveStorage(capacity_);
@@ -47,7 +46,7 @@ public:
     size_++;
   }
 
-  void pop_back() {
+  void pop_back() noexcept {
     if (size_ > 0) {
       data[size_ - 1] = 0;
       size_--;
@@ -55,22 +54,22 @@ public:
   }
 
   // не удаляет выделенную память, а лишь зануляет всё и сводит размер к 0
-  void clear() {
+  void clear() noexcept {
     if (size_ > 0) {
       std::fill(data, data + size_, 0);
       size_ = 0;
     }
   }
 
-  size_t size() { return size_; }
+  size_t size() noexcept { return size_; }
 
-  bool empty() {
+  bool empty() noexcept {
     if (size_)
       return false;
     return true;
   }
 
-  void erase(size_t index) {
+  void erase(const size_t index) noexcept {
     if (index <= size_) {
       for (size_t i = index; i < size_ - 1; i++)
         data[i] = data[i + 1];
@@ -93,13 +92,13 @@ public:
     std::copy(other.data, other.data + size_, data);
   }
 
-  T operator[](size_t index) {
+  T operator[](const size_t index) {
     if (index >= size_)
       throw std::invalid_argument("index greater than size");
     return data[index];
   }
 
-  void resize(size_t new_size) {
+  void resize(const size_t new_size) {
     if (new_size <= size_)
       std::fill(data + new_size, data + size_, 0);
     else
@@ -108,7 +107,9 @@ public:
     capacity_ = new_size;
   }
 
-  size_t capacity() { return capacity_; }
+  size_t capacity() noexcept { return capacity_; }
+
+  // void push_back(many_arguments);
 
 private:
   T *data;
@@ -117,7 +118,7 @@ private:
   // capacity_ увеличивается лишь в случае, когда size_ = capacity_
   size_t capacity_; // выделенная память
 
-  void UseReserveStorage(size_t capacity) {
+  void UseReserveStorage(const size_t capacity) {
     T *reserve_data = new T[capacity_];
     std::copy(data, data + size_, reserve_data);
     std::swap(reserve_data, data);
