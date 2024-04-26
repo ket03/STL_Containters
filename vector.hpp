@@ -6,7 +6,7 @@
 
 // перепроверить функции с памятью. shrink_to_fit, перемещение, копирование
 
-template <typename T> class Vector {
+template <typename T> class Vector : std::iterator {
 public:
   Vector() {
     data = new T[1];
