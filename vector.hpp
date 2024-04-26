@@ -1,12 +1,10 @@
+#ifndef VECTOR_HPP
+#define VECTOR_HPP
+
 #include <algorithm>
 #include <string>
-// resize, shrink_to_fit, push_back
-// исправить проблему с индексами
-// сделать pop, clear, erase, size, empty, =, iterators
-// подумать стоит ли выбрасывать ошибки при pop, clear если размер вектора = 0
-// использование copy, move, swap
-// оттестить всё !!!
-// переместить функционал в сипипишник !!!
+
+// перепроверить функции с памятью. shrink_to_fit, перемещение, копирование
 
 template <typename T> class Vector {
 public:
@@ -125,3 +123,5 @@ private:
     delete[] reserve_data;
   }
 };
+
+#endif // VECTOR_HPP

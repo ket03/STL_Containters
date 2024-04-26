@@ -1,3 +1,6 @@
+#ifndef STACK_HPP
+#define STACK_HPP
+
 #include "vector.hpp"
 
 template <typename T> class Stack {
@@ -19,3 +22,5 @@ public:
 private:
   Vector<T> vector;
 };
+
+#endif // STACK_HPP
