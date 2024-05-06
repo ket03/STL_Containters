@@ -49,6 +49,12 @@ public:
     }
   }
 
+  List(const std::initializer_list<T> &values) {
+    head_ = tail_ = nullptr;
+    for (int value : values)
+      push_back(value);
+  }
+
   void pop_back() {
     IsCorrect();
 
@@ -119,23 +125,14 @@ public:
       throw std::invalid_argument("container is empty");
   }
 
-  // void print() {
-  //   Node *ptr = head_;
-  //   while (ptr != nullptr) {
-  //     std::cout << ptr->data << " ";
-  //     ptr = ptr->next;
-  //   }
-  //   std::cout << std::endl;
-  // }
-
 private:
   struct Node {
     T data;
     Node *next;
   };
 
-  Node *tail_; // указатель на последний элемент
-  Node *head_; // указатель на первый элемент
+  Node *tail_;    // указатель на последний элемент
+  Node *head_;    // указатель на первый элемент
   Node *current_; // текущий элемент
 };
 

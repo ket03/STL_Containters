@@ -35,6 +35,14 @@ public:
     other.capacity_ = 0;
   }
 
+  Vector(const std::initializer_list<T> &values) {
+    data = new T[1];
+    size_ = 0;
+    capacity_ = 1;
+    for (int value : values)
+      push_back(value);
+  }
+
   void push_back(const T value) {
     if (size_ == capacity_) {
       capacity_ *= 2;
