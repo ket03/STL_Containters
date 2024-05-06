@@ -6,7 +6,7 @@
 
 // перепроверить функции с памятью. shrink_to_fit, перемещение, копирование
 
-template <typename T> class Vector : std::iterator {
+template <typename T> class Vector {
 public:
   Vector() {
     data = new T[1];
@@ -19,7 +19,7 @@ public:
     data = nullptr;
   }
 
-  // other - rvalue. lvalue = rvalue
+  // other - lvalue. lvalue = rvalue
   Vector(const Vector &other) : size_(other.size_), capacity_(other.capacity_) {
     data = new T[capacity_];
     std::copy(other.data, other.data + size_, data);
@@ -44,11 +44,11 @@ public:
     size_++;
   }
 
-  void pop_back() noexcept {
-    if (size_ > 0) {
-      data[size_ - 1] = 0;
-      size_--;
-    }
+  void pop_back() {
+    if (size_ <= 0)
+      throw std::invalid_argument("container is empty");
+    data[size_ - 1] = 0;
+    size_--;
   }
 
   // не удаляет выделенную память, а лишь зануляет всё и сводит размер к 0

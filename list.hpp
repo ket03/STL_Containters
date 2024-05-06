@@ -2,96 +2,141 @@
 #define LIST_HPP
 
 #include <string>
-// утечка памяти - деструктор
-// нормальный pop_back
-// froonts
+
 template <typename T> class List {
 
 public:
-  List() {
-    size_ = 0;
-    node = new Node();
-    tail = new Node();
-    head = new Node();
-    node->data = T();
-    node->next_ = nullptr;
-    node->prev_ = nullptr;
-  }
+  List() : head_(nullptr), tail_(nullptr), current_(nullptr) {}
 
   ~List() {
-    if (head) delete head;
-    // if (tail) delete tail;
-    // delete node;
+    Node *ptr = head_;
+
+    while (ptr) {
+      Node *temp = ptr;
+      ptr = ptr->next;
+      delete temp;
+    }
+    tail_ = nullptr;
+    head_ = nullptr;
+    current_ = nullptr;
   }
 
-  List(const List &other) {}
+  List(const List &other) {
+    Node *ptr = other.head_;
 
-  List(List &&other) {}
+    while (ptr) {
+      push_back(ptr->data);
+      ptr = ptr->next;
+    }
+  }
+
+  List(List &&other) : head_(other.head), tail_(other.tail_) {
+    other.head_ = nullptr;
+    other.tail_ = nullptr;
+  }
 
   void push_back(const T value) {
-    if (size_ > 0) {
-      Node *new_node = new Node();
-      new_node->data = value;
-      new_node->prev_ = node;
-      node->next_ = new_node;
-      node = new_node;
-      tail = new_node;
-    //   delete new_node;
+    Node *new_node = new Node();
+    new_node->data = value;
+
+    if (tail_ == nullptr) {
+      head_ = new_node;
+      tail_ = new_node;
+      current_ = new_node;
     } else {
-      node->data = value;
-      head = node;
+      tail_->next = new_node;
+      tail_ = tail_->next;
     }
-    size_++;
   }
 
   void pop_back() {
-    if (size_ > 1) {
-      tail = tail->prev_;
-      tail->next_ = nullptr;
-      node = tail;
-    } else if (size_ == 1) {
-      tail = nullptr;
-      head = nullptr;
-      node = nullptr;
-    } else if (size_ == 0) {
-      throw std::range_error("can't delete empty list");
+    IsCorrect();
+
+    Node *ptr = head_;
+    if (ptr == tail_) {
+      delete tail_;
+      tail_ = nullptr;
+      head_ = nullptr;
+    } else {
+      while (ptr->next != tail_)
+        ptr = ptr->next;
+      delete tail_;
+      tail_ = ptr;
+      tail_->next = nullptr;
     }
-    size_--;
   }
 
-  void push_front() {}
+  void push_front(const T value) {
+    Node *new_node = new Node();
+    new_node->data = value;
 
-  void pop_front() {}
-
-  void next() {
-    if (node != tail)
-      node = node->next_;
-    throw std::range_error("iterator on highest index");
+    if (tail_ == nullptr) {
+      head_ = new_node;
+      tail_ = new_node;
+      current_ = new_node;
+    } else {
+      new_node->next = head_;
+      head_ = new_node;
+    }
   }
 
-  void prev() {
-    if (node != head)
-      node = node->prev_;
-    throw std::range_error("iterator on lowest index");
+  void pop_front() {
+    IsCorrect();
+    Node *temp = head_;
+    head_ = head_->next;
+    delete temp;
+
+    if (head_ == nullptr)
+      tail_ = nullptr;
   }
 
-  T getData() {
-    if (node)
-        return node->data;
-    else throw std::range_error("list is empty");
+  T CurrentElement() {
+    IsCorrect();
+    return current_->data;
   }
+
+  void Next() {
+    IsCorrect();
+    if (current_ == tail_)
+      throw std::invalid_argument("current element already is last");
+    current_ = current_->next;
+  }
+
+  void Back() {
+    IsCorrect();
+    if (current_ == head_)
+      throw std::invalid_argument("current element already is first");
+    Node *ptr = head_;
+    while (ptr->next != current_)
+      ptr = ptr->next;
+    current_ = ptr;
+  }
+
+  void IsCorrect() {
+    if (current_ == nullptr)
+      throw std::invalid_argument("container is empty");
+    if (tail_ == nullptr)
+      throw std::invalid_argument("container is empty");
+  }
+
+  // void print() {
+  //   Node *ptr = head_;
+  //   while (ptr != nullptr) {
+  //     std::cout << ptr->data << " ";
+  //     ptr = ptr->next;
+  //   }
+  //   std::cout << std::endl;
+  // }
 
 private:
   struct Node {
     T data;
-    Node *next_;
-    Node *prev_;
+    Node *next;
   };
 
-  size_t size_;
-  Node *node;
-  Node *tail;
-  Node *head;
+  Node *tail_; // указатель на последний элемент
+  Node *head_; // указатель на первый элемент
+  Node *current_; // текущий элемент
 };
 
 #endif // LIST_HPP
