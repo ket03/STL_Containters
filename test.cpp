@@ -1,9 +1,11 @@
 // list, iterator, tree - set, insert_many vector
 
-#include "vector.hpp"
+#include "stack.hpp"
 #include <iostream>
 
 int main() {
-  Vector<int> a{1, 2, 3};
+  Stack<int> a;
+  a.push_back(1);
+  Stack<int> b(std::move(a));
   
 }

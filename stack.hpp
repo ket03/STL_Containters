@@ -9,6 +9,12 @@ public:
   Stack() = default;
   ~Stack() = default;
 
+  Stack(const Vector &other) {}
+
+  Stack(Stack &&other) {}
+
+  Stack(const std::initializer_list<T> &values) {}
+
   T top() noexcept { return vector[vector.size() - 1]; }
 
   bool empty() noexcept { return vector.empty(); }

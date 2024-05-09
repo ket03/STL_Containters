@@ -4,10 +4,11 @@
 enum { BLACK, RED };
 
 template <typename T> class Tree {
-  Tree(){};
-  ~Tree(){};
 
 public:
+  Tree(){};
+  ~Tree(){};
+  void Insert() {}
 private:
   struct Node {
     Node *left;

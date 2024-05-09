@@ -3,9 +3,16 @@
 
 #include "tree.hpp"
 
+template <typename T>
 class Set {
 
 public:
+    Set() {}
+    ~Set() {}
+    Set(const Set &other) {}
+    Set(Set &&other) {}
+    Set(const std::initializer_list<T> &values) {}
+
 private:
 };
 
